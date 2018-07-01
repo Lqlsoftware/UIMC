@@ -1,10 +1,8 @@
 ffm-train
 ffm-predict
 *.bin
-Data/test_interaction.csv
-Data/train_interaction.csv
-Data/test_text.txt
-Data/train_text.txt
+Data/*.csv
+Data/*.pkl
 Model/
 .idea/
 .DS_Store

@@ -15,7 +15,7 @@ python gen_data_train.py Model/$DATE/train.ffm Model/$DATE/valid.ffm
 python gen_data_test.py Model/$DATE/test.ffm
 
 # train & predict
-./ffm-train -r 0.1 -p Model/$DATE/valid.ffm -s 8 --auto-stop Model/$DATE/train.ffm Model/$DATE/baseline.model
+./ffm-train -r 0.2 -p Model/$DATE/valid.ffm -s 8 --auto-stop Model/$DATE/train.ffm Model/$DATE/baseline.model
 ./ffm-predict Model/$DATE/test.ffm Model/$DATE/baseline.model Model/$DATE/output
 
 # convert result

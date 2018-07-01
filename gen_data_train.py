@@ -5,6 +5,7 @@ import csv
 import hashlib
 import sys
 import time
+import pickle
 
 FIELDS = ['user_id', 'photo_id', 'click', 'time', 'duration_time']
 
@@ -24,6 +25,7 @@ user_id_count = collections.defaultdict(int)
 photo_id_count = collections.defaultdict(int)
 user_time_count = collections.defaultdict(int)
 photo_text = {}
+photo_face = {}
 
 
 def scan(path):
@@ -39,19 +41,46 @@ def scan(path):
 
 
 def scanText(path):
+	# with open(path, 'r') as f:
+	# 	for i, row in enumerate(f):
+	# 		if i % 1000000 == 0:
+	# 			sys.stderr.write('scan text: {0:6.0f}\t{1}m\n'.format(time.time() - start, int(i / 1000000)))
+	# 		content = row.strip('\n').split('\t')
+	# 		photo_id = content[0]
+	# 		texts = content[1].split(',')
+	# 		res = []
+	# 		for text in texts:
+	# 			if text == '0':
+	# 				continue
+	# 			res.append(hash_str('photo_text-' + text))
+	# 		photo_text[photo_id] = res
 	with open(path, 'r') as f:
-		for i, row in enumerate(f):
-			if i % 1000000 == 0:
-				sys.stderr.write('scan text: {0:6.0f}\t{1}m\n'.format(time.time() - start, int(i / 1000000)))
-			content = row.strip('\n').split('\t')
-			photo_id = content[0]
-			texts = content[1].split(',')
-			res = []
-			for text in texts:
-				if text == '0':
-					continue
-				res.append(hash_str('photo_text-' + text))
-			photo_text[photo_id] = res
+		global photo_text
+		photo_text = pickle.load(f)
+
+
+def scanFace(path):
+	# with open(path, 'r') as f:
+	# 	rx = re.compile('([\s\[\]])')
+	# 	for i, row in enumerate(f):
+	# 		if i % 1000000 == 0:
+	# 			sys.stderr.write('scan text: {0:6.0f}\t{1}m\n'.format(time.time() - start, int(i / 1000000)))
+	# 		content = row.strip('\n').split('\t')
+	# 		faces = np.asarray(re.split('[\[\],]', rx.sub('', content[1])), dtype=str)
+	# 		photo_face[content[0]] = np.reshape(faces, [-1, 4])
+	# with open(path + 'new.pkl', 'w+') as f:
+	# 	for key in photo_face:
+	# 		res = []
+	# 		for face in photo_face[key]:
+	# 			res.append(hash_str('face_percent-' + face[0]))
+	# 			res.append(hash_str('face_sex-' + face[1]))
+	# 			res.append(hash_str('face_age-' + face[2]))
+	# 			res.append(hash_str('face_look-' + face[3]))
+	# 		photo_face[key] = res
+	# 	pickle.dump(photo_face, f)
+	with open(path, 'r') as f:
+		global photo_face
+		photo_face = pickle.load(f)
 
 
 def write(src_path, dst_path, vaild_path):
@@ -85,14 +114,20 @@ def write(src_path, dst_path, vaild_path):
 					[str(field), hash_str('user_time_count-' + str(user_time_count[user_id + '-' + row['time']])),
 					 '1']))
 			field += 1
+			if photo_id in photo_face:
+				field_str = str(field)
+				for face in photo_face[photo_id]:
+					row_to_write.append(":".join([field_str, face, '1']))
+			field += 1
+			field_str = str(field)
 			for text in photo_text[photo_id]:
 				row_to_write.append(
 					":".join(
-						[str(field), text, '1']))
+						[field_str, text, '1']))
 			# write a row
 			row_to_write = " ".join(row_to_write)
 			# 验证集
-			if i % 40 == 0:
+			if i % 10 == 0:
 				valid.write(row_to_write + '\n')
 			else:
 				f.write(row_to_write + '\n')
@@ -101,5 +136,6 @@ def write(src_path, dst_path, vaild_path):
 if __name__ == "__main__":
 	# 假设数据集是个csv文件 (我会完成到csv的转换代码)
 	scan('Data/train_interaction.csv')
-	scanText('Data/train_text.txt')
+	scanText('Data/train_text.pkl')
+	scanFace('Data/train_face.pkl')
 	write('Data/train_interaction.csv', sys.argv[1], sys.argv[2])
