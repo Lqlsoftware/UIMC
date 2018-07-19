@@ -13,7 +13,7 @@ FIELDS = ['user_id', 'photo_id', 'time', 'duration_time']
 
 NEW_FIELDS = FIELDS + ['user_id_count', 'photo_id_count', 'user_time_count']
 
-NR_BINS = 10000000
+NR_BINS = 100000
 
 
 def hash_str(string):
@@ -66,9 +66,9 @@ def scan(path):
 		user_id_count[user_id] += 1
 		photo_id_count[row['photo_id']] += 1
 		user_time_count[user_id + '-' + row['time']] += 1
-		if not user_id in user_id_photo_id:
-			user_id_photo_id[user_id] = []
-		user_id_photo_id[user_id].append(row['photo_id'])
+		# if not user_id in user_id_photo_id:
+		# 	user_id_photo_id[user_id] = []
+		# user_id_photo_id[user_id].append(row['photo_id'])
 	        #若是第一行，令last_user_id和user_id相等
         if i == 1:
 			last_user_id = row['user_id']
@@ -185,8 +185,8 @@ def write(src_path, dst_path):
 			# addition field
 			user_id = row['user_id']
 			photo_id = row['photo_id']
-			row_to_write.append(":".join([str(field), hash_str('bag_photo_id-' + ','.join(user_id_photo_id[user_id])), '1']))
-			field += 1
+			# row_to_write.append(":".join([str(field), hash_str('bag_photo_id-' + ','.join(user_id_photo_id[user_id])), '1']))
+			# field += 1
 			row_to_write.append(
 				":".join([str(field), hash_str('user_id_count-' + str(user_id_count[user_id])), '1']))
 			field += 1
