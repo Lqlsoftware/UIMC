@@ -71,21 +71,21 @@ def scan(path):
 		# 	user_id_photo_id[user_id] = []
 		# user_id_photo_id[user_id].append(row['photo_id'])
 
-	        #若是第一行，令last_user_id和user_id相等
-        if i == 1:
+			#若是第一行，令last_user_id和user_id相等
+		if i == 1:
 			last_user_id = row['user_id']
 
-        #若该行数据与上一行是同一个用户，将user_id,time,click加入templist列表
-        if user_id == last_user_id:
+		#若该行数据与上一行是同一个用户，将user_id,time,click加入templist列表
+		if user_id == last_user_id:
 			date1 = int(row['time'])- 759600000000
 			date2 = time.strftime("%Y%m%d",time.localtime(date1))
 			templist.append((row['user_id'],date2,int(row['click'])))
-        #若不是同一用户，处理上一个用户的click_history,处理完毕后清空templist列表,继续处理下一个用户数据
-        else:
+		#若不是同一用户，处理上一个用户的click_history,处理完毕后清空templist列表,继续处理下一个用户数据
+		else:
 			after_sorted = sorted(templist, key=itemgetter(1),reverse=True)
 			click_history(after_sorted,user_id)
 			templist = []
-        last_user_id = user_id
+		last_user_id = user_id
 
 	# user_id_count
 	user_id_count_sorted = sorted(user_id_count.items(), key=lambda e: e[1], reverse=True)
@@ -102,60 +102,60 @@ def scan(path):
 
 def click_history(sorted_list,user_id):
 #     print(sorted_list)
-    #初始化click为0
-    click = 0
-    for i,record in enumerate(sorted_list,start=0):
-        #列表中的第一项，初始化last_date为最近一天日期
-        if i == 0:
+	#初始化click为0
+	click = 0
+	for i,record in enumerate(sorted_list,start=0):
+		#列表中的第一项，初始化last_date为最近一天日期
+		if i == 0:
 			last_date = record[1]#上一天日期
 			first_date = record[1]#倒数第一天日期
 			#日期计数，列表中第一项日期为第一天
 			date_count = 1
-        #更新date日期
-        date = record[1]
-        #计算两日期差值
-        date1=datetime.datetime.strptime(first_date,"%Y%m%d")
-        date2=datetime.datetime.strptime(date,"%Y%m%d")
-        date_diff = (date1-date2).days
-        #当列表中两条数据日期一样时(目的在于查看用户该日期是否点击过短视频，每日记录有多条，一条为1即为1)
-        if date == last_date:
+		#更新date日期
+		date = record[1]
+		#计算两日期差值
+		date1=datetime.datetime.strptime(first_date,"%Y%m%d")
+		date2=datetime.datetime.strptime(date,"%Y%m%d")
+		date_diff = (date1-date2).days
+		#当列表中两条数据日期一样时(目的在于查看用户该日期是否点击过短视频，每日记录有多条，一条为1即为1)
+		if date == last_date:
 			#若click=0，什么都不做，若click=1,更新click信息
 			if record[2] == 0:
-			    pass
+				pass
 			else:
-			    click = 1
-        #当列表中两条数据日期不一样时,首先处理click_history（上一天的）,然后处理当天的click
-        else:
+				click = 1
+		#当列表中两条数据日期不一样时,首先处理click_history（上一天的）,然后处理当天的click
+		else:
 			temp_history[user_id] += str(click)
 			if date_count == 1:
-			    click_history1[user_id] = temp_history[user_id]
-			    click_history7[user_id] =click_history6[user_id] =click_history5[user_id] = click_history4[user_id] =click_history3[user_id] = click_history2[user_id] =click_history1[user_id]
+				click_history1[user_id] = temp_history[user_id]
+				click_history7[user_id] =click_history6[user_id] =click_history5[user_id] = click_history4[user_id] =click_history3[user_id] = click_history2[user_id] =click_history1[user_id]
 			elif date_diff == 2:
-			    click_history2[user_id] = temp_history[user_id]
-			    click_history7[user_id] =click_history6[user_id] =click_history5[user_id] = click_history4[user_id] =click_history3[user_id] = click_history2[user_id]
+				click_history2[user_id] = temp_history[user_id]
+				click_history7[user_id] =click_history6[user_id] =click_history5[user_id] = click_history4[user_id] =click_history3[user_id] = click_history2[user_id]
 			elif date_diff == 3:
-			    click_history3[user_id] = temp_history[user_id]
-			    click_history7[user_id] =click_history6[user_id] =click_history5[user_id] = click_history4[user_id] =click_history3[user_id]
+				click_history3[user_id] = temp_history[user_id]
+				click_history7[user_id] =click_history6[user_id] =click_history5[user_id] = click_history4[user_id] =click_history3[user_id]
 			elif date_diff == 4:
-			    click_history4[user_id] = temp_history[user_id]
-			    click_history7[user_id] =click_history6[user_id] =click_history5[user_id] = click_history4[user_id]
+				click_history4[user_id] = temp_history[user_id]
+				click_history7[user_id] =click_history6[user_id] =click_history5[user_id] = click_history4[user_id]
 			elif date_diff == 5:
-			    click_history5[user_id] = temp_history[user_id]    
-			    click_history7[user_id] =click_history6[user_id] =click_history5[user_id] 
+				click_history5[user_id] = temp_history[user_id]
+				click_history7[user_id] =click_history6[user_id] =click_history5[user_id]
 			elif date_diff == 6:
-			    click_history6[user_id] = temp_history[user_id]    
-			    click_history7[user_id] =click_history6[user_id]  
+				click_history6[user_id] = temp_history[user_id]
+				click_history7[user_id] =click_history6[user_id]
 			elif date_diff == 7:
-			    click_history7[user_id] = temp_history[user_id]      
+				click_history7[user_id] = temp_history[user_id]
 			else:
-			    break
+				break
 			click_count[user_id] = click_history7[user_id].count('1')
-			date_count += 1 
+			date_count += 1
 			if record[2] == 0:
-			    click = 0
+				click = 0
 			else:
-			    click = 1
-        last_date = date
+				click = 1
+		last_date = date
 
 
 def scanText(path):
@@ -209,6 +209,31 @@ def scanFace(path):
 	with open(path, 'r') as f:
 		global photo_face
 		photo_face = pickle.load(f)
+		for k,v in photo_face.item():
+			weight_average_list=[0,0,0]
+			faces=[]
+			count = 1;
+			#分为4个一组
+			for item1 in temp_str:
+				#每组前三个直接加入列表
+				if count % 4 != 0:
+					temp_float.append(float(item1))
+					count += 1
+				else:
+					#将第四个加入temp_float列表后，将每张脸所占比作为权重求多张脸其他特征的加权求和，特征不再保留脸部占比
+					temp_float.append(float(item1))
+					weight_average_list[0] = weight_average_list[0] + temp_float[0]*temp_float[1]
+					weight_average_list[1] = weight_average_list[1] + temp_float[0]*temp_float[2]
+					weight_average_list[2] = weight_average_list[2] + temp_float[0]*temp_float[3]
+#                     print(weight_average_list)
+					temp_float = []
+					count = 1
+			for item2 in weight_average_list:
+				#归一化
+				item2 = MaxMinNormalization(item2,np.max(weight_average_list),np.min(weight_average_list))
+				faces.append(str(round(item2,3)))
+#             print(faces)
+			photo_face[content[0]] = np.reshape(faces,[-1,3])
 
 
 def write(src_path, dst_path, vaild_path):

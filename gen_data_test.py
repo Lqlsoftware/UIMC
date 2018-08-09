@@ -233,5 +233,5 @@ if __name__ == "__main__":
 	# 假设数据集是个csv文件 (我会完成到csv的转换代码)
 	scan('Data/test_interaction.csv')
 	scanText('Data/test_text.pkl')
-	# scanFace('Data/test_face.pkl')
+	scanFace('Data/test_face.pkl')
 	write('Data/test_interaction.csv', sys.argv[1])
